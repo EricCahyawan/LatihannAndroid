@@ -55,14 +55,20 @@ class add_edit : Fragment() {
         val description = etDescription.text.toString()
 
         val newTask = Task(name, date, category, description, task?.status ?: "To Do")
-        val homeFragment = parentFragmentManager.findFragmentById(R.id.fragment_container) as home
 
-        if (task == null) {
-            homeFragment.addTask(newTask)
-        } else {
-            homeFragment.updateTask(task!!, newTask)
+        // Mengakses Fragment home menggunakan requireActivity()
+        val homeFragment = requireActivity().supportFragmentManager.findFragmentByTag("HOME_FRAGMENT") as? home
+
+        // Pastikan homeFragment tidak null, baru lakukan operasi
+        homeFragment?.let {
+            if (task == null) {
+                it.addTask(newTask)
+            } else {
+                it.updateTask(task!!, newTask)
+            }
         }
 
         parentFragmentManager.popBackStack()
     }
+
 }
