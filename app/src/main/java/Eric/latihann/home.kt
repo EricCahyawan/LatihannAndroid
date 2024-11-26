@@ -20,10 +20,7 @@ class home : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
-
         recyclerView = view.findViewById(R.id.recycler_view)
-        val fabAdd: FloatingActionButton = view.findViewById(R.id.fab_add)
-
         taskList = TaskPreferences.loadTasks(requireContext())
         taskAdapter = TaskAdapter(
             taskList,
@@ -32,12 +29,8 @@ class home : Fragment() {
             onStatusChange = { position -> changeTaskStatus(position) },
             onSaveToPrefs = { task -> saveToPreferences(task) }
         )
-
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = taskAdapter
-
-        fabAdd.setOnClickListener { navigateToAdd() }
-
         return view
     }
 
@@ -45,6 +38,8 @@ class home : Fragment() {
         taskList.add(newTask)
         taskAdapter.notifyItemInserted(taskList.size - 1)
         TaskPreferences.saveTasks(requireContext(), taskList)
+        taskAdapter.notifyDataSetChanged()
+        Toast.makeText(requireContext(), "Task berhasil ditambahkan", Toast.LENGTH_SHORT).show()
     }
 
     fun updateTask(oldTask: Task, updatedTask: Task) {

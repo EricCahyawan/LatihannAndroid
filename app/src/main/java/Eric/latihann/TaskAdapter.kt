@@ -15,6 +15,9 @@ class TaskAdapter(
     private val onStatusChange: (Int) -> Unit,
     private val onSaveToPrefs: (Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+    fun saveTaskToPreferences(task: Task) {
+        onSaveToPrefs(task) // Memanggil fungsi dari home fragment
+    }
 
     inner class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val taskName: TextView = view.findViewById(R.id.task_name)

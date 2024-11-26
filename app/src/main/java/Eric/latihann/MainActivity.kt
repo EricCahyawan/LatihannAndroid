@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, home()) // Ganti dengan fragment Anda
+                .replace(R.id.fragment_container, home(), "HOME_FRAGMENT")
                 .commit()
         }
     }
