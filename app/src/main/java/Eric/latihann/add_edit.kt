@@ -5,55 +5,64 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [add_edit.newInstance] factory method to
- * create an instance of this fragment.
- */
 class add_edit : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var etName: EditText
+    private lateinit var etDate: EditText
+    private lateinit var etCategory: EditText
+    private lateinit var etDescription: EditText
+    private lateinit var btnSave: Button
+
+    private var task: Task? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_edit, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_edit, container, false)
+
+        etName = view.findViewById(R.id.et_name)
+        etDate = view.findViewById(R.id.et_date)
+        etCategory = view.findViewById(R.id.et_category)
+        etDescription = view.findViewById(R.id.et_description)
+        btnSave = view.findViewById(R.id.btn_save)
+
+        task = arguments?.getParcelable("task")
+        task?.let {
+            etName.setText(it.name)
+            etDate.setText(it.date)
+            etCategory.setText(it.category)
+            etDescription.setText(it.description)
+        }
+
+        btnSave.setOnClickListener { saveTask() }
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment add_edit.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            add_edit().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun saveTask() {
+        val name = etName.text.toString()
+        val date = etDate.text.toString()
+        val category = etCategory.text.toString()
+        val description = etDescription.text.toString()
+
+        val newTask = Task(name, date, category, description, task?.status ?: "To Do")
+        val homeFragment = parentFragmentManager.findFragmentById(R.id.fragment_container) as home
+
+        if (task == null) {
+            homeFragment.addTask(newTask)
+        } else {
+            homeFragment.updateTask(task!!, newTask)
+        }
+
+        parentFragmentManager.popBackStack()
     }
 }
