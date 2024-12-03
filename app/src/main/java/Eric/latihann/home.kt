@@ -32,7 +32,12 @@ class home : Fragment() {
             onEdit = { task -> navigateToEdit(task) },
             onDelete = { position -> deleteTask(position) },
             onStatusChange = { position -> changeTaskStatus(position) },
-            onSaveToPrefs = { task -> saveToPreferences(task) }
+            onSaveToPrefs = { task ->
+                val position = taskList.indexOf(task)
+                if (position >= 0) {
+                    saveAndRemoveTask(position)
+                }
+            }
         )
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = taskAdapter
@@ -57,17 +62,24 @@ class home : Fragment() {
     }
 
     private fun deleteTask(position: Int) {
-        taskList.removeAt(position)
-        taskAdapter.notifyItemRemoved(position)
-        TaskPreferences.saveTasks(requireContext(), taskList)
+        if (position in taskList.indices) {
+            taskList.removeAt(position)
+            taskAdapter.notifyItemRemoved(position)
+            TaskPreferences.saveTasks(requireContext(), taskList)
+        } else {
+            Toast.makeText(requireContext(), "Task tidak ditemukan!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun changeTaskStatus(position: Int) {
         val task = taskList[position]
-        task.status = when (task.status) {
-            "To Do" -> "In Progress"
-            "In Progress" -> "Done"
-            else -> "To Do"
+        when (task.status) {
+            "To Do" -> {
+                task.status = "In Progress"
+            }
+            "In Progress" -> {
+                task.status = "Done"
+            }
         }
         taskAdapter.notifyItemChanged(position)
         TaskPreferences.saveTasks(requireContext(), taskList)
@@ -94,5 +106,11 @@ class home : Fragment() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun saveAndRemoveTask(position: Int) {
+        val task = taskList[position]
+        Toast.makeText(requireContext(), "Task '${task.name}' disimpan ke Shared Preferences!", Toast.LENGTH_SHORT).show()
+        deleteTask(position)
     }
 }

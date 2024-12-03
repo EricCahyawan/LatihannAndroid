@@ -13,12 +13,10 @@ class TaskAdapter(
     private val onEdit: (Task) -> Unit,
     private val onDelete: (Int) -> Unit,
     private val onStatusChange: (Int) -> Unit,
-    private val onSaveToPrefs: (Task) -> Unit
+    private val onSaveToPrefs: (Task) -> Unit // Ubah parameter ke Int agar lebih konsisten
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
-    fun saveTaskToPreferences(task: Task) {
-        onSaveToPrefs(task) // Memanggil fungsi dari home fragment
-    }
 
+    // ViewHolder
     inner class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val taskName: TextView = view.findViewById(R.id.task_name)
         val btnDelete: Button = view.findViewById(R.id.btn_delete)
@@ -34,9 +32,7 @@ class TaskAdapter(
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
-
         holder.taskName.text = task.name
-        holder.btnEdit.isEnabled = task.status == "To Do"
         holder.btnStatus.text = when (task.status) {
             "To Do" -> "Kerjakan"
             "In Progress" -> "Selesai"
@@ -45,13 +41,15 @@ class TaskAdapter(
         holder.arrowDown.visibility = if (task.status == "Done") View.VISIBLE else View.GONE
         holder.btnEdit.visibility = if (task.status == "Done") View.GONE else View.VISIBLE
         holder.btnDelete.visibility = if (task.status == "Done") View.GONE else View.VISIBLE
-        holder.btnStatus.visibility = if (task.status == "Done") View.GONE else View.VISIBLE
-
         holder.btnEdit.setOnClickListener { onEdit(task) }
         holder.btnDelete.setOnClickListener { onDelete(position) }
         holder.btnStatus.setOnClickListener { onStatusChange(position) }
-        holder.arrowDown.setOnClickListener { onSaveToPrefs(task) }
+        holder.arrowDown.setOnClickListener {
+            onSaveToPrefs(task)
+            onDelete(position)
+        }
     }
+
 
     override fun getItemCount() = tasks.size
 }

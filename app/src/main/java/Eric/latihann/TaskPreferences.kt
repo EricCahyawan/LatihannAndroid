@@ -20,6 +20,7 @@ object TaskPreferences {
         val sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val taskListJson = sharedPreferences.getString(TASK_LIST_KEY, "[]")
         Log.d("TaskPreferences", "Tasks loaded: $taskListJson")
-        return Gson().fromJson(taskListJson, Array<Task>::class.java).toMutableList()
+        val taskType = object : TypeToken<MutableList<Task>>() {}.type
+        return Gson().fromJson(taskListJson, taskType) ?: mutableListOf()
     }
 }
