@@ -14,12 +14,17 @@ class home : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var taskAdapter: TaskAdapter
     private var taskList: MutableList<Task> = mutableListOf()
+    private lateinit var fabAdd: FloatingActionButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+        fabAdd = view.findViewById(R.id.fab_add) // Inisialisasi di sini
+        fabAdd.setOnClickListener {
+            navigateToAdd() // Panggil method navigasi saat tombol diklik
+        }
         recyclerView = view.findViewById(R.id.recycler_view)
         taskList = TaskPreferences.loadTasks(requireContext())
         taskAdapter = TaskAdapter(

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,13 +57,16 @@ class add_edit : Fragment() {
 
         val newTask = Task(name, date, category, description, task?.status ?: "To Do")
         val homeFragment = requireActivity().supportFragmentManager.findFragmentByTag("HOME_FRAGMENT") as? home
-        homeFragment?.let {
+        if (homeFragment != null) {
             if (task == null) {
-                it.addTask(newTask)
+                homeFragment.addTask(newTask)
             } else {
-                it.updateTask(task!!, newTask)
+                homeFragment.updateTask(task!!, newTask)
             }
+        } else {
+            Toast.makeText(requireContext(), "Home fragment not found", Toast.LENGTH_SHORT).show()
         }
+
 
         parentFragmentManager.popBackStack()
     }
